@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RadialBarChartView">
+        <attr name="pointerLabelColor" format="color" />
+        <attr name="pointerLabelHeight" format="dimension" />
+        <attr name="pointerLabelWidth" format="dimension" />
+        <attr name="pointerLabelX" format="dimension" />
+        <attr name="pointerLabelY" format="dimension" />
+        <attr name="centerLabelColor" format="color" />
+        <attr name="centerLabelText" format="string" />
+        <attr name="centerLabelHeight" format="dimension" />
+        <attr name="centerLabelWidth" format="dimension" />
+        <attr name="centerLabelX" format="dimension" />
+        <attr name="centerLabelY" format="dimension" />
+        <attr name="centerCircleRadius" format="dimension" />
+        <attr name="sliceHeaderBackgroundColor" format="dimension" />
+        <attr name="sliceHeaderLabelColor" format="dimension" />
+        <attr name="sliceHeaderLabelWidth" format="dimension" />
+        <attr name="sliceHeaderLabelHeight" format="dimension" />
+        <attr name="sliceSpacing" format="dimension" />
+        <attr name="outerRingWidth" format="dimension" />
+        <attr name="arcSegmentStrokeWidth" format="dimension" />
+        <attr name="arcSegmentSpacing" format="dimension" />
+        <attr name="pointerRadius" format="dimension" />
+        <attr name="rotation" format="integer" />
+        <attr name="scrollActivate" format="boolean"/>
+    </declare-styleable>
+</resources>

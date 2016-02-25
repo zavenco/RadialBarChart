@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:chart="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="co.zaven.radialbarchartsample.RadialBarChartActivity"
+    tools:showIn="@layout/activity_radial_bar_chart">
+
+    <co.zaven.radialbarchart.charts.RadialBarChartView
+        android:id="@+id/chart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        chart:centerLabelColor="@android:color/black"
+        chart:centerLabelHeight="40dp"
+        chart:centerLabelText="88"
+        chart:centerCircleRadius="20dp"
+        chart:pointerLabelColor="@android:color/black"
+        chart:pointerLabelHeight="20dp"
+        chart:pointerLabelWidth="100dp"
+        chart:pointerRadius="4dp"
+        chart:rotation="0"
+        chart:sliceSpacing="2dp"
+        chart:arcSegmentSpacing="4dp"
+        chart:arcSegmentStrokeWidth="4dp"
+        chart:outerRingWidth="8dp"
+        chart:sliceHeaderLabelColor="@android:color/white"
+        chart:sliceHeaderLabelHeight="10dp"/>
+
+
+</RelativeLayout>
