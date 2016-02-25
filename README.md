@@ -4,7 +4,7 @@ Chart library for Android compatible with API 17: Android 4.2+ (Jelly Bean)
 
 ## Screens
 
-![](screens/demo.gif)
+![](screens/radialbarchart.png)
 
 ## Download and Import
 
