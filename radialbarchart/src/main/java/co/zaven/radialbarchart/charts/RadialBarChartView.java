@@ -116,8 +116,8 @@ public class RadialBarChartView extends BaseChartView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int width = getMeasuredWidth();
-        setMeasuredDimension(width, (int) (width + (mPointerLabelHeight * 3)));
+//        int width = getMeasuredWidth();
+//        setMeasuredDimension(width, (int) (width + (mPointerLabelHeight * 3)));
     }
 
     @Override
@@ -178,12 +178,11 @@ public class RadialBarChartView extends BaseChartView {
      * @param attrs   {@link AttributeSet}
      */
     private void obtainStyleable(Context context, AttributeSet attrs) {
-        TypedArray attributes = context.getTheme().obtainStyledAttributes(
-                attrs,
-                R.styleable.RadialBarChartView,
-                0, 0);
-
         try {
+            TypedArray attributes = context.getTheme().obtainStyledAttributes(
+                    attrs,
+                    R.styleable.RadialBarChartView,
+                    0, 0);
             mPointerLabelX = attributes.getDimension(R.styleable.RadialBarChartView_pointerLabelX, 0.0f);
             mPointerLabelY = attributes.getDimension(R.styleable.RadialBarChartView_pointerLabelY, 0.0f);
             mPointerLabelWidth = attributes.getDimension(R.styleable.RadialBarChartView_pointerLabelWidth, 0.0f);
@@ -211,6 +210,7 @@ public class RadialBarChartView extends BaseChartView {
             mChartRotation = attributes.getInt(R.styleable.RadialBarChartView_rotation, 0);
             mPointerRadius = attributes.getDimension(R.styleable.RadialBarChartView_pointerRadius, 2.0f);
             isScrollActivate = attributes.getBoolean(R.styleable.RadialBarChartView_scrollActivate, false);
+            attributes.recycle();
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }

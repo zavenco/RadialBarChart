@@ -26,9 +26,9 @@
         chart:pointerLabelWidth="100dp"
         chart:pointerRadius="4dp"
         chart:rotation="0"
-        chart:sliceSpacing="2dp"
-        chart:arcSegmentSpacing="4dp"
-        chart:arcSegmentStrokeWidth="4dp"
+        chart:sliceSpacing="4dp"
+        chart:arcSegmentSpacing="5dp"
+        chart:arcSegmentStrokeWidth="5dp"
         chart:outerRingWidth="8dp"
         chart:sliceHeaderLabelColor="@android:color/white"
         chart:sliceHeaderLabelHeight="10dp"/>
