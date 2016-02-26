@@ -292,4 +292,19 @@
     <color name="md_blue_grey_700">#455A64</color>
     <color name="md_blue_grey_800">#37474F</color>
     <color name="md_blue_grey_900">#263238</color>
+
+    <color name="chart_color_excellent">#31DF01</color>
+    <color name="chart_color_good">#97D40D</color>
+    <color name="chart_color_almost_good">#FEC81D</color>
+    <color name="chart_color_not_bad">#FF8226</color>
+    <color name="chart_color_bad">#FF3B2F</color>
+
+    <array name="chart_colors">
+        <item>@color/chart_color_excellent</item>
+        <item>@color/chart_color_good</item>
+        <item>@color/chart_color_almost_good</item>
+        <item>@color/chart_color_not_bad</item>
+        <item>@color/chart_color_bad</item>
+    </array>
+
 </resources>

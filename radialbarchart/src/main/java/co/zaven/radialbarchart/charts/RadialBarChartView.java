@@ -2,6 +2,7 @@ package co.zaven.radialbarchart.charts;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -13,6 +14,7 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.SparseIntArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,6 +22,7 @@ import android.widget.Scroller;
 
 import java.util.ArrayList;
 
+import co.zaven.radialbarchart.entities.ChartDictionary;
 import co.zaven.radialbarchart.utils.ChartUtils;
 import co.zaven.radialbarchart.R;
 import co.zaven.radialbarchart.listeners.RadialBarChartGestureListener;
@@ -60,6 +63,8 @@ public class RadialBarChartView extends BaseChartView {
     private ValueAnimator mScrollAnimator;
     private ValueAnimator mRotateAnimator;
     private String mCenterLabelText;
+
+    private ArrayList<Integer> chartColors;
 
     private float mCenterLabelX;
     private float mCenterLabelY;
@@ -179,10 +184,7 @@ public class RadialBarChartView extends BaseChartView {
      */
     private void obtainStyleable(Context context, AttributeSet attrs) {
         try {
-            TypedArray attributes = context.getTheme().obtainStyledAttributes(
-                    attrs,
-                    R.styleable.RadialBarChartView,
-                    0, 0);
+            TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs, R.styleable.RadialBarChartView, 0, 0);
             mPointerLabelX = attributes.getDimension(R.styleable.RadialBarChartView_pointerLabelX, 0.0f);
             mPointerLabelY = attributes.getDimension(R.styleable.RadialBarChartView_pointerLabelY, 0.0f);
             mPointerLabelWidth = attributes.getDimension(R.styleable.RadialBarChartView_pointerLabelWidth, 0.0f);
@@ -194,18 +196,18 @@ public class RadialBarChartView extends BaseChartView {
             mCenterLabelY = attributes.getDimension(R.styleable.RadialBarChartView_centerLabelY, 0.0f);
             mCenterLabelWidth = attributes.getDimension(R.styleable.RadialBarChartView_centerLabelWidth, 0.0f);
             mCenterLabelHeight = attributes.getDimension(R.styleable.RadialBarChartView_centerLabelHeight, 0.0f);
-            mCenterCircleRadius = attributes.getDimension(R.styleable.RadialBarChartView_centerCircleRadius, 10);
             mCenterLabelTextColor = attributes.getColor(R.styleable.RadialBarChartView_centerLabelColor, 0xff000000);
+            mCenterCircleRadius = attributes.getDimension(R.styleable.RadialBarChartView_centerCircleRadius, ChartDictionary.DefaultMetrics.DEFAULT_CENTER_RADIUS_DP);
 
             mSliceHeaderLabelWidth = attributes.getDimension(R.styleable.RadialBarChartView_sliceHeaderLabelWidth, 0.0f);
             mSliceHeaderLabelHeight = attributes.getDimension(R.styleable.RadialBarChartView_sliceHeaderLabelHeight, 0.0f);
-            mSliceSpacing = attributes.getDimension(R.styleable.RadialBarChartView_sliceSpacing, 0.0f);
             mSliceHeaderLabelTextColor = attributes.getColor(R.styleable.RadialBarChartView_sliceHeaderLabelColor, 0xff000000);
+            mSliceSpacing = attributes.getDimension(R.styleable.RadialBarChartView_sliceSpacing, ChartDictionary.DefaultMetrics.DEFAULT_SLICE_SPACING_DP);
             mSliceHeaderLabelBackgroundColor = attributes.getColor(R.styleable.RadialBarChartView_sliceHeaderBackgroundColor, getContext().getResources().getColor(R.color.md_grey_500));
 
-            mArcSegmentStrokeWidth = attributes.getDimension(R.styleable.RadialBarChartView_arcSegmentStrokeWidth, 0.0f);
-            mArcSegmentSpacing = attributes.getDimension(R.styleable.RadialBarChartView_arcSegmentSpacing, 0.0f);
-            mOuterRingWidth = attributes.getDimension(R.styleable.RadialBarChartView_outerRingWidth, 0.0f);
+            mArcSegmentStrokeWidth = attributes.getDimension(R.styleable.RadialBarChartView_arcSegmentStrokeWidth, ChartDictionary.DefaultMetrics.DEFAULT_ARC_SEGMENT_WIDTH_DP);
+            mArcSegmentSpacing = attributes.getDimension(R.styleable.RadialBarChartView_arcSegmentSpacing, ChartDictionary.DefaultMetrics.DEFAULT_ARC_SEGMENT_STROKE_SPACING_DP);
+            mOuterRingWidth = attributes.getDimension(R.styleable.RadialBarChartView_outerRingWidth, ChartDictionary.DefaultMetrics.DEFAULT_OUTER_RING_WIDTH_DP);
 
             mChartRotation = attributes.getInt(R.styleable.RadialBarChartView_rotation, 0);
             mPointerRadius = attributes.getDimension(R.styleable.RadialBarChartView_pointerRadius, 2.0f);
@@ -225,15 +227,9 @@ public class RadialBarChartView extends BaseChartView {
         mContext = context;
 
         data = new ArrayList<>();
+        chartColors = new ArrayList<>();
         mSliceVector = new PointF();
         mSliceBounds = new RectF();
-        mDensity = getContext().getResources().getDisplayMetrics().density;
-
-        mCenterCircleRadius = ChartUtils.convertDpToPixel(mCenterCircleRadius, mContext);
-        mArcSegmentStrokeWidth = ChartUtils.convertDpToPixel(mArcSegmentStrokeWidth, mContext);
-        mArcSegmentSpacing = ChartUtils.convertDpToPixel(mArcSegmentSpacing, mContext);
-        mOuterRingWidth = ChartUtils.convertDpToPixel(mOuterRingWidth, mContext);
-        mSliceSpacing = ChartUtils.convertDpToPixel(mSliceSpacing, mContext);
 
         ChartUtils.setLayerToSW(this);
 
@@ -293,6 +289,7 @@ public class RadialBarChartView extends BaseChartView {
 
         setupAnimation();
         setupInEditMode();
+        setupChartColors();
     }
 
     /**
@@ -331,6 +328,15 @@ public class RadialBarChartView extends BaseChartView {
             addItem("Yellow", 30, 2, res.getColor(R.color.md_yellow_400));
             addItem("Teal", 90, 2, res.getColor(R.color.md_teal_400));
         }
+    }
+
+    private void setupChartColors() {
+        Resources resources = getResources();
+        chartColors.add(resources.getColor(R.color.chart_color_excellent));
+        chartColors.add(resources.getColor(R.color.chart_color_good));
+        chartColors.add(resources.getColor(R.color.chart_color_almost_good));
+        chartColors.add(resources.getColor(R.color.chart_color_not_bad));
+        chartColors.add(resources.getColor(R.color.chart_color_bad));
     }
 
     /**
@@ -553,7 +559,9 @@ public class RadialBarChartView extends BaseChartView {
                 for (int j = 0; j < arcSegmentCount; j++) {
                     float rInn = j > 0 ? mCenterCircleRadius + ((mArcSegmentSpacing + mArcSegmentStrokeWidth) * j) : mCenterCircleRadius;
                     float rOut = rInn + mArcSegmentStrokeWidth;
+
                     mRingsFill.setColor(model.getColor());
+
                     drawArcSegment(canvas, cx, cy, rInn, rOut, lastAngle, angle, mRingsFill, null, null);
                 }
                 lastAngle += angle;
@@ -707,7 +715,7 @@ public class RadialBarChartView extends BaseChartView {
      * @param sliceWeight the slice weight.
      * @param color       the slice color.
      */
-    public void addItem(String label, float percent, float sliceWeight, int color) {
+    public void addItem(String label, float percent, int sliceWeight, int color) {
         RadialBarChartModel model = new RadialBarChartModel(label, percent, sliceWeight, color);
         mTotal += sliceWeight;
         data.add(model);

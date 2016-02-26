@@ -23,7 +23,7 @@ public class RadialBarChartModel extends BaseModel {
      * This is the slice weight.
      * This value sets slice width.
      */
-    private float sliceWeight;
+    private int sliceWeight;
 
     /**
      * This is slice color value.
@@ -38,7 +38,7 @@ public class RadialBarChartModel extends BaseModel {
      * @param sliceWeight the slice weight.
      * @param color       the slice color value.
      */
-    public RadialBarChartModel(String label, float percent, float sliceWeight, int color) {
+    public RadialBarChartModel(String label, float percent, int sliceWeight, int color) {
         this.label = label;
         this.percent = percent;
         this.sliceWeight = sliceWeight;
@@ -86,7 +86,7 @@ public class RadialBarChartModel extends BaseModel {
      *
      * @return the slice weight.
      */
-    public float getSliceWeight() {
+    public int getSliceWeight() {
         return sliceWeight;
     }
 
@@ -95,7 +95,7 @@ public class RadialBarChartModel extends BaseModel {
      *
      * @param sliceWeight the slice weight.
      */
-    public void setSliceWeight(float sliceWeight) {
+    public void setSliceWeight(int sliceWeight) {
         this.sliceWeight = sliceWeight;
     }
 
