@@ -99,6 +99,7 @@ public class RadialBarChartView extends BaseChartView {
     private int mCurrentSlice;
     private int mChartRotation;
     private int mTotal;
+    private int mChartMode = ChartDictionary.ChartMode.DEFAULT;
 
     private boolean isScrollActivate;
 
@@ -116,13 +117,6 @@ public class RadialBarChartView extends BaseChartView {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         // do nothing
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-//        int width = getMeasuredWidth();
-//        setMeasuredDimension(width, (int) (width + (mPointerLabelHeight * 3)));
     }
 
     @Override
@@ -566,6 +560,42 @@ public class RadialBarChartView extends BaseChartView {
                 }
                 lastAngle += angle;
             }
+
+        }
+
+
+        /**
+         * This method draws rings that visualize percentage value of slice.
+         *
+         * @param canvas {@link Canvas}
+         */
+        private void drawArcRings(Canvas canvas, int segmentCount) {
+            float range;
+            float lastAngle = mChartRotation;
+
+            float mArcSegmentSpacing = 0;
+            float mArcSegmentStrokeWidth = 0;
+            for (int i = 0; i < data.size(); i++) {
+                RadialBarChartModel model = data.get(i);
+                float angle = Math.abs(model.getSliceWeight()) * mSliceScale;
+
+                range = (model.getPercent() * (circleRadius - mCenterCircleRadius - 0.01f)) / 100;
+                mArcSegmentSpacing = (range / segmentCount);
+                mArcSegmentStrokeWidth = (range / segmentCount);
+
+                for (int j = 0; j < segmentCount; j++) {
+                    float rInn = j > 0 ? mCenterCircleRadius + ((mArcSegmentSpacing + mArcSegmentStrokeWidth) * j) : mCenterCircleRadius;
+                    float rOut = rInn + mArcSegmentStrokeWidth;
+
+                    for (int k = 0; k < chartColors.size(); k++) {
+                        mRingsFill.setColor(chartColors.get(i));
+                    }
+
+                    drawArcSegment(canvas, cx, cy, rInn, rOut, lastAngle, angle, mRingsFill, null, null);
+                }
+                lastAngle += angle;
+            }
+
         }
 
         /**
