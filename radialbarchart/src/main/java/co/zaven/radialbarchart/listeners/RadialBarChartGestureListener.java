@@ -87,7 +87,7 @@ public class RadialBarChartGestureListener extends GestureDetector.SimpleOnGestu
     }
 
     /**
-     * This method check if animation is running.
+     * Check if animation is running.
      *
      * @return returns true if animation is running otherwise false.
      */

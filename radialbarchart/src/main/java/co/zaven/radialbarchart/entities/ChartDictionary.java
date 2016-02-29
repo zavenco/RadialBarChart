@@ -9,7 +9,7 @@ public class ChartDictionary {
 
     public static class ChartMode {
         public static final int DEFAULT = 0;
-        public static final int DISCRETE_VALUES = 1;
+        public static final int DISCREET_VALUES = 1;
     }
 
     public static class DefaultMetrics {

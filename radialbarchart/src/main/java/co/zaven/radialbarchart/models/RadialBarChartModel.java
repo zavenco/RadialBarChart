@@ -36,6 +36,19 @@ public class RadialBarChartModel extends BaseModel {
      * @param label       the text label of slice in radial bar chart.
      * @param percent     the percentage value of slice.
      * @param sliceWeight the slice weight.
+     */
+    public RadialBarChartModel(String label, float percent, int sliceWeight) {
+        this.label = label;
+        this.percent = percent;
+        this.sliceWeight = sliceWeight;
+    }
+
+    /**
+     * Constructor with parameters.
+     *
+     * @param label       the text label of slice in radial bar chart.
+     * @param percent     the percentage value of slice.
+     * @param sliceWeight the slice weight.
      * @param color       the slice color value.
      */
     public RadialBarChartModel(String label, float percent, int sliceWeight, int color) {

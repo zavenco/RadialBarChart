@@ -15,7 +15,7 @@
 
     <co.zaven.radialbarchart.charts.RadialBarChartView
         android:id="@+id/chart"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         chart:arcSegmentSpacing="8dp"
@@ -24,12 +24,12 @@
         chart:centerLabelColor="@android:color/black"
         chart:centerLabelHeight="40dp"
         chart:centerLabelText="88"
-        chart:outerRingWidth="16dp"
+        chart:outerRingWidth="18dp"
         chart:pointerLabelColor="@android:color/black"
         chart:pointerLabelHeight="20dp"
         chart:pointerLabelWidth="100dp"
         chart:pointerRadius="4dp"
-        chart:rotation="0"
+        chart:rotation="54"
         chart:sliceHeaderLabelColor="@android:color/white"
         chart:sliceHeaderLabelHeight="10dp"
         chart:sliceSpacing="12dp" />

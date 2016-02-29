@@ -8,11 +8,11 @@ Chart library for Android compatible with API 17: Android 4.2+ (Jelly Bean)
 
 ## Download and Import
 
-Right now you can clone this sample project and import library as module.
+Right now you can clone this sample project and import library as a module.
 
 ## Usage
 
-Every chart view can be defined in layout xml file:
+Chart view can be defined in layout xml file:
 
 ```xml
     <co.zaven.radialbarchart.charts.RadialBarChartView xmlns:chart="http://schemas.android.com/apk/res-auto"

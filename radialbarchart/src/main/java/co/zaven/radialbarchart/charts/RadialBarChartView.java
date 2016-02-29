@@ -2,7 +2,6 @@ package co.zaven.radialbarchart.charts;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -14,10 +13,10 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.SparseIntArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Scroller;
 
 import java.util.ArrayList;
@@ -64,7 +63,7 @@ public class RadialBarChartView extends BaseChartView {
     private ValueAnimator mRotateAnimator;
     private String mCenterLabelText;
 
-    private ArrayList<Integer> chartColors;
+    private ArrayList<Integer> mChartColors;
 
     private float mCenterLabelX;
     private float mCenterLabelY;
@@ -82,7 +81,6 @@ public class RadialBarChartView extends BaseChartView {
     private float mSliceHeaderLabelHeight;
     private float mCenterX;
     private float mCenterY;
-    private float mDensity;
     private float mSliceScale;
     private float mSliceSpacing;
     private float mArcSegmentStrokeWidth;
@@ -99,7 +97,7 @@ public class RadialBarChartView extends BaseChartView {
     private int mCurrentSlice;
     private int mChartRotation;
     private int mTotal;
-    private int mChartMode = ChartDictionary.ChartMode.DEFAULT;
+    private int mChartMode = ChartDictionary.ChartMode.DISCREET_VALUES;
 
     private boolean isScrollActivate;
 
@@ -117,6 +115,11 @@ public class RadialBarChartView extends BaseChartView {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         // do nothing
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     @Override
@@ -153,7 +156,6 @@ public class RadialBarChartView extends BaseChartView {
 
         mRadialBarChartGestureListener.setCenterX(mCenterX);
         mRadialBarChartGestureListener.setCenterY(mCenterY);
-
     }
 
     @Override
@@ -221,7 +223,7 @@ public class RadialBarChartView extends BaseChartView {
         mContext = context;
 
         data = new ArrayList<>();
-        chartColors = new ArrayList<>();
+        mChartColors = new ArrayList<>();
         mSliceVector = new PointF();
         mSliceBounds = new RectF();
 
@@ -279,6 +281,8 @@ public class RadialBarChartView extends BaseChartView {
         addView(mCenterCircleView);
 
         mPointerView = new PointerView(getContext());
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        mPointerView.setLayoutParams(params);
         addView(mPointerView);
 
         setupAnimation();
@@ -302,6 +306,7 @@ public class RadialBarChartView extends BaseChartView {
         mDetector = new GestureDetector(RadialBarChartView.this.getContext(), mRadialBarChartGestureListener);
         mDetector.setIsLongpressEnabled(false);
         mRotateAnimator = ValueAnimator.ofFloat(0.0f, 1.0f);
+        mRotateAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
         mRotateAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
@@ -316,21 +321,21 @@ public class RadialBarChartView extends BaseChartView {
     private void setupInEditMode() {
         if (this.isInEditMode()) {
             Resources res = getResources();
-            addItem("Blue", 45, 2, res.getColor(R.color.md_blue_400));
-            addItem("Red", 75, 2, res.getColor(R.color.md_red_400));
-            addItem("Orange", 55, 2, res.getColor(R.color.md_orange_400));
-            addItem("Yellow", 30, 2, res.getColor(R.color.md_yellow_400));
-            addItem("Teal", 90, 2, res.getColor(R.color.md_teal_400));
+            addItem("bad", 10, 2, res.getColor(R.color.chart_color_bad));
+            addItem("not bad", 30, 2, res.getColor(R.color.chart_color_not_bad));
+            addItem("almost good", 50, 2, res.getColor(R.color.chart_color_almost_good));
+            addItem("good", 70, 2, res.getColor(R.color.chart_color_good));
+            addItem("excellent", 100, 2, res.getColor(R.color.chart_color_excellent));
         }
     }
 
     private void setupChartColors() {
         Resources resources = getResources();
-        chartColors.add(resources.getColor(R.color.chart_color_excellent));
-        chartColors.add(resources.getColor(R.color.chart_color_good));
-        chartColors.add(resources.getColor(R.color.chart_color_almost_good));
-        chartColors.add(resources.getColor(R.color.chart_color_not_bad));
-        chartColors.add(resources.getColor(R.color.chart_color_bad));
+        mChartColors.add(resources.getColor(R.color.chart_color_bad));
+        mChartColors.add(resources.getColor(R.color.chart_color_not_bad));
+        mChartColors.add(resources.getColor(R.color.chart_color_almost_good));
+        mChartColors.add(resources.getColor(R.color.chart_color_good));
+        mChartColors.add(resources.getColor(R.color.chart_color_excellent));
     }
 
     /**
@@ -347,6 +352,12 @@ public class RadialBarChartView extends BaseChartView {
         if (position.length() > circleRadius) {
             result = false;
         }
+
+        mSliceVector.set(x - mCenterX, y - mCenterY);
+        if(mSliceVector.length() < mCenterCircleRadius) {
+            return false;
+        }
+
         float touchAngle = (ChartUtils.pointToAngle(x, y, mCenterX, mCenterY) - mChartRotation + 360f) % 360f;
         float startAngle = 0;
         for (int i = 0; i < data.size(); i++) {
@@ -381,7 +392,7 @@ public class RadialBarChartView extends BaseChartView {
     }
 
     /**
-     * This method starts rotation animation from start angle to target angle.
+     * Start rotation animation from start angle to target angle.
      *
      * @param startAngleRotation  the angle from rotation begins.
      * @param targetAngleRotation the target angle.
@@ -464,7 +475,11 @@ public class RadialBarChartView extends BaseChartView {
             super.onDraw(canvas);
             drawSlices(canvas);
             drawHeaders(canvas);
-            drawArcRings(canvas);
+            if (mChartMode == ChartDictionary.ChartMode.DEFAULT) {
+                drawArcRings(canvas);
+            } else if (mChartMode == ChartDictionary.ChartMode.DISCREET_VALUES) {
+                drawArcRings(canvas, mChartColors.size());
+            }
             drawLines(canvas);
         }
 
@@ -529,6 +544,11 @@ public class RadialBarChartView extends BaseChartView {
                 RadialBarChartModel model = data.get(i);
                 float angle = Math.abs(model.getSliceWeight()) * mSliceScale;
                 mRingsFill.setColor(mSliceHeaderLabelBackgroundColor);
+                if (i == mCurrentSlice) {
+                    mSliceHeaderLabelPaint.setAlpha(0);
+                } else {
+                    mSliceHeaderLabelPaint.setAlpha(255);
+                }
                 drawArcSegment(canvas, cx, cy, circleRadius, circleRadius + mOuterRingWidth, lastAngle, angle, mRingsFill, model.getLabel(), mSliceHeaderLabelPaint);
                 lastAngle += angle;
             }
@@ -540,25 +560,26 @@ public class RadialBarChartView extends BaseChartView {
          * @param canvas {@link Canvas}
          */
         private void drawArcRings(Canvas canvas) {
-            int arcSegmentCount;
-            float range;
-            float lastAngle = mChartRotation;
-            for (int i = 0; i < data.size(); i++) {
-                RadialBarChartModel model = data.get(i);
-                float angle = Math.abs(model.getSliceWeight()) * mSliceScale;
+            try {
+                int arcSegmentCount;
+                float range;
+                float lastAngle = mChartRotation;
+                for (int i = 0; i < data.size(); i++) {
+                    RadialBarChartModel model = data.get(i);
+                    float angle = Math.abs(model.getSliceWeight()) * mSliceScale;
+                    range = (model.getPercent() * (circleRadius - mCenterCircleRadius - 0.01f)) / 100;
+                    arcSegmentCount = Math.round(range / (mArcSegmentSpacing + mArcSegmentStrokeWidth));
 
-                range = (model.getPercent() * (circleRadius - mCenterCircleRadius - 0.01f)) / 100;
-                arcSegmentCount = Math.round(range / (mArcSegmentSpacing + mArcSegmentStrokeWidth));
-
-                for (int j = 0; j < arcSegmentCount; j++) {
-                    float rInn = j > 0 ? mCenterCircleRadius + ((mArcSegmentSpacing + mArcSegmentStrokeWidth) * j) : mCenterCircleRadius;
-                    float rOut = rInn + mArcSegmentStrokeWidth;
-
-                    mRingsFill.setColor(model.getColor());
-
-                    drawArcSegment(canvas, cx, cy, rInn, rOut, lastAngle, angle, mRingsFill, null, null);
+                    for (int j = 0; j < arcSegmentCount; j++) {
+                        float rInn = j > 0 ? mCenterCircleRadius + ((mArcSegmentSpacing + mArcSegmentStrokeWidth) * j) : mCenterCircleRadius;
+                        float rOut = rInn + mArcSegmentStrokeWidth;
+                        mRingsFill.setColor(model.getColor());
+                        drawArcSegment(canvas, cx, cy, rInn, rOut, lastAngle, angle, mRingsFill, null, null);
+                    }
+                    lastAngle += angle;
                 }
-                lastAngle += angle;
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage(), e);
             }
 
         }
@@ -569,31 +590,33 @@ public class RadialBarChartView extends BaseChartView {
          *
          * @param canvas {@link Canvas}
          */
-        private void drawArcRings(Canvas canvas, int segmentCount) {
-            float range;
-            float lastAngle = mChartRotation;
+        private void drawArcRings(Canvas canvas, int maxSegmentCount) {
+            try {
+                float range;
+                float lastAngle = mChartRotation;
 
-            float mArcSegmentSpacing = 0;
-            float mArcSegmentStrokeWidth = 0;
-            for (int i = 0; i < data.size(); i++) {
-                RadialBarChartModel model = data.get(i);
-                float angle = Math.abs(model.getSliceWeight()) * mSliceScale;
+                float mArcSegmentSpacing;
+                float mArcSegmentStrokeWidth;
+                for (int i = 0; i < data.size(); i++) {
+                    RadialBarChartModel model = data.get(i);
+                    float angle = Math.abs(model.getSliceWeight()) * mSliceScale;
 
-                range = (model.getPercent() * (circleRadius - mCenterCircleRadius - 0.01f)) / 100;
-                mArcSegmentSpacing = (range / segmentCount);
-                mArcSegmentStrokeWidth = (range / segmentCount);
+                    range = (circleRadius - mCenterCircleRadius - 0.01f);
+                    mArcSegmentStrokeWidth = mArcSegmentSpacing = (range / maxSegmentCount) / 2;
+                    float stepSize = 100 / maxSegmentCount;
+                    float sliceValue = model.getPercent();
+                    int arcSegmentCount = Math.round(sliceValue / stepSize);
+                    mRingsFill.setColor(mChartColors.get(arcSegmentCount - 1));
 
-                for (int j = 0; j < segmentCount; j++) {
-                    float rInn = j > 0 ? mCenterCircleRadius + ((mArcSegmentSpacing + mArcSegmentStrokeWidth) * j) : mCenterCircleRadius;
-                    float rOut = rInn + mArcSegmentStrokeWidth;
-
-                    for (int k = 0; k < chartColors.size(); k++) {
-                        mRingsFill.setColor(chartColors.get(i));
+                    for (int j = 0; j < arcSegmentCount; j++) {
+                        float rInn = j > 0 ? mCenterCircleRadius + ((mArcSegmentSpacing + mArcSegmentStrokeWidth) * j) : mCenterCircleRadius;
+                        float rOut = rInn + mArcSegmentStrokeWidth;
+                        drawArcSegment(canvas, cx, cy, rInn, rOut, lastAngle, angle, mRingsFill, null, null);
                     }
-
-                    drawArcSegment(canvas, cx, cy, rInn, rOut, lastAngle, angle, mRingsFill, null, null);
+                    lastAngle += angle;
                 }
-                lastAngle += angle;
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage(), e);
             }
 
         }
@@ -751,4 +774,24 @@ public class RadialBarChartView extends BaseChartView {
         data.add(model);
     }
 
+    /**
+     * This method adds an item to the list of chart data.
+     *
+     * @param label       the slice label text.
+     * @param percent     the slice percentage value.
+     * @param sliceWeight the slice weight.
+     */
+    public void addItem(String label, float percent, int sliceWeight) {
+        RadialBarChartModel model = new RadialBarChartModel(label, percent, sliceWeight);
+        mTotal += sliceWeight;
+        data.add(model);
+    }
+
+    public void setChartMode(int mChartMode) {
+        this.mChartMode = mChartMode;
+    }
+
+    public void setCenterLabelText(String mCenterLabelText) {
+        this.mCenterLabelText = mCenterLabelText;
+    }
 }
