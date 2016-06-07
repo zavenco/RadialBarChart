@@ -1,8 +1,45 @@
-*.iml
+# Android
 .gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
+local.properties/
+build/
+app/build/
+captures/
+
+# OpenCV
+OpenCV3.1/build/
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# Adobe
 .DS_Store
-/build
-/captures
+
+# Node
+node_modules
+npm-debug.log
+bower_components
+.tmp
+.sass-cache
+
+# PHP Storm
+*.iml
+.idea/
+
+# Atom
+.imdone/

@@ -400,6 +400,21 @@ public class RadialBarChartView extends BaseChartView {
     private void startAnimation(float startAngleRotation, float targetAngleRotation) {
         this.mStartAngleRotation = (startAngleRotation % 360 + 360) % 360;
         this.mTargetAngleRotation = (targetAngleRotation % 360 + 360) % 360;
+
+        float leftDistance = -1 * (startAngleRotation - targetAngleRotation) % 360;
+        float rightDistance = (leftDistance > 0 ? -1 : 1) * (360 - (Math.abs(startAngleRotation - targetAngleRotation) % 360));
+        float distance = (Math.abs(leftDistance) < Math.abs(rightDistance) ? leftDistance : rightDistance);
+        float targetAngle = startAngleRotation + distance;
+
+        this.mStartAngleRotation = startAngleRotation;
+        this.mTargetAngleRotation = targetAngle;
+
+        mRotateAnimator.start();
+        mChartRotation = (int) (targetAngle % 360);
+        if (mChartRotation < 0) {
+            mChartRotation += 360;
+        }
+
         mRotateAnimator.start();
     }
 
